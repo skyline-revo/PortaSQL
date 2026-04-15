@@ -2,16 +2,6 @@
 
 A local-first ETL + knowledge retrieval system that turns heterogeneous data into queryable SQL and supports natural-language exploration through CLI and web UI.
 
-> This repository is a portfolio version of the project for technical evaluation and interview review. Some production components, internal configurations, and core retrieval logic are intentionally omitted. Full implementation can be presented privately upon request.
-
-## Why This Project
-
-PortaSQL demonstrates practical data engineering + application design in one workflow:
-- API-style ingestion
-- schema normalization
-- SQLite persistence
-- query tooling (SQL + natural language)
-- runnable UX via CLI and local web UI
 
 ## Features (Public Demo)
 
@@ -92,16 +82,6 @@ This public version is intentionally constrained:
 - external API credentials are not included
 - private datasets and internal endpoints are not public
 
-## Tech Stack
-
-- Python 3.10+
-- SQLite
-- PyYAML
-- requests
-- arxiv (optional source)
-- anthropic (optional LLM mode)
-- pytest / pytest-mock
-
 ## Local Setup Notes
 
 Environment variables (optional):
@@ -113,13 +93,3 @@ cp .env.example .env
 
 `ANTHROPIC_API_KEY` enables higher-quality NL answers. Without it, `ask` still works in a limited local demo mode.
 
-## Public vs Private Implementation
-
-This repository is not an open-source production release.
-It is a portfolio-safe implementation designed to show architecture, coding style, testing approach, and system design decisions without exposing all proprietary details.
-
-For interview loops, the fuller private implementation (including additional retrieval logic and production configuration patterns) can be shared live upon request.
-
-## Rights
-
-See [RIGHTS.md](RIGHTS.md). All rights reserved.
