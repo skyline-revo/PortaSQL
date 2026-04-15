@@ -1,8 +1,39 @@
-.venv/
-.pytest_cache/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environments
+.venv/
+venv/
+
+# Test/cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS/editor
 .DS_Store
-config.yaml
+.vscode/
+.idea/
+
+# Local secrets/config
+.env
+.env.*
+!.env.example
+config/config.yaml
+
+# Local data artifacts
+*.db
+*.sqlite
+*.sqlite3
 data/*.db
+data/*.sqlite*
 data/saved_results/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/

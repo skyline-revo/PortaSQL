@@ -24,7 +24,7 @@ Commands:
   stats                    - Show database statistics
   sources                  - Show configured data sources
   schema                   - Show database schema
-  config                   - Open config.yaml for editing
+  config                   - Open config/config.yaml for editing
   ui                       - Start local web UI at http://127.0.0.1:8080
   quit                     - Exit
 """
@@ -54,7 +54,7 @@ def _parse_fetch_args(command: str) -> tuple[list[str] | None, str | None]:
 
 def _open_config() -> None:
     """Open config.yaml in the user's preferred editor if available."""
-    path = get_project_root() / "config.yaml"
+    path = get_project_root() / "config" / "config.yaml"
     if not path.exists():
         print("Config does not exist yet. Run any command once to auto-generate from example.")
         return

@@ -1,0 +1,10 @@
+$ ./PortaSQL start
+> fetch
+Done! Total inserted this run: 3 documents.
+
+> stats
+{'total_documents': 3, 'by_source': [{'source_type': 'demo', 'c': 3}], 'by_domain': [{'domain': 'nlp', 'c': 1}, {'domain': 'computer vision', 'c': 1}, {'domain': 'robotics', 'c': 1}]}
+
+> ask How many records do we have?
+SQL: SELECT COUNT(*) AS total FROM documents WHERE 1=1
+Demo mode answer (without external LLM): found 1 matching rows. Set ANTHROPIC_API_KEY for higher-quality natural language answers.

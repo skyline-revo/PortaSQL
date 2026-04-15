@@ -1,154 +1,125 @@
-# llm-knowledge-retrieval
+# PortaSQL (Portfolio Edition)
 
-I've been curious about how LLMs can interact with structured databases - especially for domains where accuracy matters more than creativity. But I didn't want to build something that only works with one data source.
+A local-first ETL + knowledge retrieval system that turns heterogeneous data into queryable SQL and supports natural-language exploration through CLI and web UI.
 
-This project is a modular pipeline that lets you:
-1. Connect to any API (arXiv, OpenAlex, NewsAPI, or add your own)
-2. Define what topics you want to collect in a simple config file
-3. Fetch and store data automatically (ETL pipeline)
-4. Query everything using plain English (Text-to-SQL via Claude)
-5. Expose it all via MCP so AI agents can access your knowledge base
+> This repository is a portfolio version of the project for technical evaluation and interview review. Some production components, internal configurations, and core retrieval logic are intentionally omitted. Full implementation can be presented privately upon request.
 
-Adding a new data source is just writing one connector class that implements the BaseConnector interface. The rest of the pipeline handles it automatically.
+## Why This Project
 
-## Setup
+PortaSQL demonstrates practical data engineering + application design in one workflow:
+- API-style ingestion
+- schema normalization
+- SQLite persistence
+- query tooling (SQL + natural language)
+- runnable UX via CLI and local web UI
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp config.yaml.example config.yaml
-```
+## Features (Public Demo)
 
-Set your Anthropic API key:
+- Modular connector interface (`BaseConnector`) with pluggable sources
+- End-to-end ETL pipeline (`fetch -> transform -> store`)
+- Unified SQLite schema with metadata fields
+- Interactive CLI for fetch/search/stats/ask
+- Local web dashboard for demo workflows
+- Natural-language query path with:
+  - external LLM mode (Anthropic, when key is provided)
+  - fallback local demo mode (no API key required)
+- Minimal local demo dataset for reproducible runs
 
-```bash
-export ANTHROPIC_API_KEY="your_key_here"
-```
+## Architecture Overview
+
+High-level flow:
+
+1. Connectors fetch records (demo connector included)
+2. ETL normalizes records into one document schema
+3. Data is inserted into local SQLite (duplicate-safe)
+4. CLI/UI retrieval tools query and summarize results
+
+See detailed docs:
+- [Architecture](docs/architecture.md)
+- [Demo Guide](docs/demo.md)
+- [Security Notes](docs/security-notes.md)
 
 ## Quick Start
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp config/config.example.yaml config/config.yaml
+```
+
+Run CLI:
 
 ```bash
 python src/main.py
 ```
 
-Then run:
-- `fetch`
-- `ask Which papers about transformers were published in 2024?`
-- `stats`
-- `ui` (starts local web app at `http://127.0.0.1:8080`)
-
-### One-Line Launcher
-
-You can start the project with one command (no manual `cd` or `source` needed):
+Or one-line launcher:
 
 ```bash
-"/Users/rextang/Desktop/ETL Pipeline/llm-knowledge-retrieval/PortaSQL" start
+./PortaSQL start
 ```
 
-Other commands:
+Run local web UI:
 
 ```bash
-"/Users/rextang/Desktop/ETL Pipeline/llm-knowledge-retrieval/PortaSQL" ui
-"/Users/rextang/Desktop/ETL Pipeline/llm-knowledge-retrieval/PortaSQL" test
+./PortaSQL ui
 ```
 
-## Adding a New Connector
-
-1. Create a file in `src/connectors/` (example: `myapi_connector.py`).
-2. Implement a class that inherits from `BaseConnector`.
-3. Implement:
-   - `fetch(query: str, max_results: int) -> list[dict]`
-   - `get_source_name() -> str`
-4. Return documents with at least:
-   - `title`, `authors`, `date/published_date`, `abstract/content`, `source_name`, `source_id`, `url`
-5. Add a new source entry to `config.yaml` using `connector: "myapi"`.
-
-No ETL code changes are required.
-
-## Configuration
-
-Use `config.yaml`:
-
-- `project_name`: project label
-- `database_path`: sqlite file path
-- `llm_model`: Anthropic model name
-- `polite_email`: optional for OpenAlex polite pool
-- `sources[]`:
-  - `name`
-  - `connector`
-  - `queries`
-  - `max_results_per_query`
-  - `api_key` (only for key-based APIs)
-
-## Architecture Diagram (ASCII)
+## CLI Usage Examples
 
 ```text
-          +-------------------+
-          |    config.yaml    |
-          +---------+---------+
-                    |
-                    v
-+-------------------+-------------------+
-|            ETL Orchestrator           |
-| (dynamic connector loading + tagging) |
-+---------+---------------+-------------+
-          |               |
-          v               v
-   +------+-----+   +-----+------+
-   | Connectors |   | Transform   |
-   | arXiv      |   | normalize   |
-   | OpenAlex   |   | autotag     |
-   | NewsAPI    |   +-----+------+
-   +------+-----+         |
-          |               v
-          +--------> +----+-----+
-                     | SQLite DB |
-                     +----+-----+
-                          |
-          +---------------+---------------+
-          |                               |
-          v                               v
- +--------+---------+             +-------+--------+
- | NL -> SQL (LLM)  |             | MCP JSON-RPC   |
- | Claude + safety  |             | tools/query    |
- +------------------+             +----------------+
-```
-
-## Example Session
-
-```text
-$ python src/main.py
-Welcome to LLM Knowledge Retrieval System
-
 > fetch
-Fetching from ML Papers from arXiv: "machine learning" ... 50 records
-Done! Total inserted this run: 128 documents.
-
-> ask Which papers about transformers were published in 2024?
-SQL: SELECT title, authors, year FROM documents WHERE title LIKE '%transformer%' AND year = 2024
-Found 12 rows.
-
-> search quantum
-1. Quantum Transformers - A. Author (2024) [arxiv]
+> fetch --source demo
+> fetch --query "transformer"
+> search transformer
+> stats
+> ask How many transformer papers are in the database?
 ```
 
-## Running Tests
+## Screenshots
+
+Place screenshots in `assets/` and reference them here.
+
+- CLI demo: `assets/cli-demo.png`
+- Web UI demo: `assets/web-ui-demo.png`
+
+## Demo Limitations (Intentional)
+
+This public version is intentionally constrained:
+- production retrieval/ranking logic is simplified
+- production config/deployment details are removed
+- external API credentials are not included
+- private datasets and internal endpoints are not public
+
+## Tech Stack
+
+- Python 3.10+
+- SQLite
+- PyYAML
+- requests
+- arxiv (optional source)
+- anthropic (optional LLM mode)
+- pytest / pytest-mock
+
+## Local Setup Notes
+
+Environment variables (optional):
 
 ```bash
-pytest tests/ -v
+cp .env.example .env
+# then export values manually or with your preferred dotenv workflow
 ```
 
-Integration tests are marked with `@pytest.mark.integration` and are skipped unless enabled:
+`ANTHROPIC_API_KEY` enables higher-quality NL answers. Without it, `ask` still works in a limited local demo mode.
 
-```bash
-RUN_INTEGRATION=1 NEWSAPI_KEY=... pytest tests/ -v -m integration
-```
+## Public vs Private Implementation
 
-## Future Work
+This repository is not an open-source production release.
+It is a portfolio-safe implementation designed to show architecture, coding style, testing approach, and system design decisions without exposing all proprietary details.
 
-- User access control
-- Vector search
-- Rich web UI with auth and dashboards
-- Scheduled fetching (cron)
-- Support for streaming APIs
+For interview loops, the fuller private implementation (including additional retrieval logic and production configuration patterns) can be shared live upon request.
+
+## Rights
+
+See [RIGHTS.md](RIGHTS.md). All rights reserved.

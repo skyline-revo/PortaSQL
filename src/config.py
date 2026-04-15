@@ -41,19 +41,20 @@ def get_project_root() -> Path:
 def load_raw_config(config_path: str | None = None) -> dict[str, Any]:
     """Load raw config dict from YAML and ensure existence."""
     root = get_project_root()
-    path = Path(config_path) if config_path else root / "config.yaml"
-    example = root / "config.yaml.example"
+    path = Path(config_path) if config_path else root / "config" / "config.yaml"
+    example = root / "config" / "config.example.yaml"
 
     if not path.exists():
         if not example.exists():
-            raise FileNotFoundError("config.yaml and config.yaml.example are both missing")
+            raise FileNotFoundError("config/config.yaml and config/config.example.yaml are both missing")
+        path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(example, path)
         raise FileNotFoundError(f"Created {path}. Please edit it and re-run.")
 
     with path.open("r", encoding="utf-8") as f:
         loaded = yaml.safe_load(f) or {}
     if not isinstance(loaded, dict):
-        raise ValueError("config.yaml must contain a YAML object")
+        raise ValueError("config file must contain a YAML object")
     return loaded
 
 

@@ -1,0 +1,32 @@
+# Portfolio-safe public config template.
+# Copy to config/config.yaml and adjust values for your local run.
+
+project_name: "portasql-demo"
+database_path: "data/portasql_demo.db"
+llm_model: "claude-sonnet-4-20250514"
+
+sources:
+  - name: "Bundled Demo Papers"
+    connector: "demo"
+    queries:
+      - "transformer"
+      - "robotics"
+    max_results_per_query: 25
+
+# Optional sources for your own private/local testing:
+# - name: "arXiv Feed"
+#   connector: "arxiv"
+#   queries: ["machine learning"]
+#   max_results_per_query: 20
+#
+# - name: "OpenAlex Feed"
+#   connector: "openalex"
+#   polite_email: "you@example.com"
+#   queries: ["ai safety"]
+#   max_results_per_query: 20
+#
+# - name: "NewsAPI Feed"
+#   connector: "newsapi"
+#   api_key: "YOUR_NEWSAPI_KEY"
+#   queries: ["artificial intelligence"]
+#   max_results_per_query: 10

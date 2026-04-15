@@ -10,14 +10,14 @@ Usage: PortaSQL <command>
 
 Commands:
   start   Launch interactive CLI
-  ui      Launch web UI server directly
-  test    Run test suite (pytest tests/ -v)
+  ui      Launch local web UI (http://127.0.0.1:8080)
+  test    Run public demo tests
   help    Show this help
 USAGE
 }
 
 if [[ ! -x "$VENV_PY" ]]; then
-  echo "Virtual environment not found at $VENV_PY"
+  echo "Virtual environment not found: $VENV_PY"
   echo "Run once: cd \"$PROJECT_DIR\" && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
   exit 1
 fi

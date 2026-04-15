@@ -1,0 +1,38 @@
+[
+  {
+    "source_id": "demo-001",
+    "title": "Transformer Methods for Clinical Text Classification",
+    "authors": "A. Rivera, L. Chen",
+    "year": 2024,
+    "published_date": "2024-05-10",
+    "abstract": "We evaluate transformer methods for healthcare text triage with simple optimization baselines.",
+    "url": "https://example.org/demo/transformer-clinical",
+    "domain": "nlp",
+    "method": "transformer",
+    "math_topic": "optimization"
+  },
+  {
+    "source_id": "demo-002",
+    "title": "Vision Transformers for Defect Detection",
+    "authors": "J. Park, M. Singh",
+    "year": 2023,
+    "published_date": "2023-11-02",
+    "abstract": "A lightweight computer vision pipeline for industrial inspection based on vision transformers.",
+    "url": "https://example.org/demo/vit-defect",
+    "domain": "computer vision",
+    "method": "transformer",
+    "math_topic": "optimization"
+  },
+  {
+    "source_id": "demo-003",
+    "title": "Robotics Planning with Reinforcement Learning",
+    "authors": "N. Ibrahim",
+    "year": 2022,
+    "published_date": "2022-02-17",
+    "abstract": "A small benchmark on RL-based planning for warehouse robotics.",
+    "url": "https://example.org/demo/robotics-rl",
+    "domain": "robotics",
+    "method": "reinforcement learning",
+    "math_topic": "probability"
+  }
+]

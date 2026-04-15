@@ -80,13 +80,42 @@ class NL2SQLService:
         text_parts = [p.text for p in parts if getattr(p, "type", "") == "text"]
         return "\n".join(text_parts).strip()
 
+    @staticmethod
+    def _fallback_sql_from_question(question: str) -> str:
+        """Generate a conservative demo SQL query when no LLM key is configured."""
+        q = question.lower()
+        year_match = re.search(r"\b(19|20)\d{2}\b", q)
+        year_filter = f" AND year = {year_match.group(0)}" if year_match else ""
+
+        if "how many" in q or "count" in q:
+            return f"SELECT COUNT(*) AS total FROM documents WHERE 1=1{year_filter}"
+
+        keyword = None
+        for token in ["transformer", "vision", "robot", "safety", "alignment", "quantum"]:
+            if token in q:
+                keyword = token
+                break
+
+        if keyword:
+            return (
+                "SELECT title, authors, year, source_type, url FROM documents "
+                f"WHERE (title LIKE '%{keyword}%' OR content LIKE '%{keyword}%'){year_filter} "
+                "ORDER BY year DESC, id DESC LIMIT 25"
+            )
+
+        return (
+            "SELECT title, authors, year, source_type, url FROM documents "
+            f"WHERE 1=1{year_filter} ORDER BY year DESC, id DESC LIMIT 25"
+        )
+
     def ask(self, question: str) -> NL2SQLResult:
         """Run full NL -> SQL -> DB -> NL answer pipeline."""
-        sql_prompt = self._build_sql_system_prompt()
-
         try:
-            raw_sql = self._call_claude(sql_prompt, question)
-            sql_query = self.extract_sql(raw_sql)
+            if self.client:
+                raw_sql = self._call_claude(self._build_sql_system_prompt(), question)
+                sql_query = self.extract_sql(raw_sql)
+            else:
+                sql_query = self._fallback_sql_from_question(question)
             self._validate_select_only(sql_query)
             results = execute_query(self.db_path, sql_query)
         except Exception as exc:
@@ -103,6 +132,17 @@ class NL2SQLService:
                 sql_query=sql_query,
                 raw_results=[],
                 natural_language_answer="I ran the query successfully, but there were no matching results.",
+            )
+
+        if not self.client:
+            return NL2SQLResult(
+                question=question,
+                sql_query=sql_query,
+                raw_results=results,
+                natural_language_answer=(
+                    f"Demo mode answer (without external LLM): found {len(results)} matching rows. "
+                    "Set ANTHROPIC_API_KEY for higher-quality natural language answers."
+                ),
             )
 
         answer_prompt = (
