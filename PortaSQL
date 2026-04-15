@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_PY="$PROJECT_DIR/.venv/bin/python"
+
+print_usage() {
+  cat << USAGE
+Usage: PortaSQL <command>
+
+Commands:
+  start   Launch interactive CLI
+  ui      Launch web UI server directly
+  test    Run test suite (pytest tests/ -v)
+  help    Show this help
+USAGE
+}
+
+if [[ ! -x "$VENV_PY" ]]; then
+  echo "Virtual environment not found at $VENV_PY"
+  echo "Run once: cd \"$PROJECT_DIR\" && python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+  exit 1
+fi
+
+COMMAND="${1:-start}"
+
+case "$COMMAND" in
+  start)
+    exec "$VENV_PY" "$PROJECT_DIR/src/main.py"
+    ;;
+  ui)
+    exec "$VENV_PY" "$PROJECT_DIR/src/web_ui.py"
+    ;;
+  test)
+    exec "$VENV_PY" -m pytest "$PROJECT_DIR/tests/" -v
+    ;;
+  help|-h|--help)
+    print_usage
+    ;;
+  *)
+    echo "Unknown command: $COMMAND"
+    echo
+    print_usage
+    exit 1
+    ;;
+esac

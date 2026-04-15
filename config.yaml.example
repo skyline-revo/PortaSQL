@@ -1,0 +1,31 @@
+# Add your data sources here. Each source needs a connector type and search parameters.
+# You can add as many sources as you want.
+
+project_name: "my-research-db"
+database_path: "data/research.db"
+llm_model: "claude-sonnet-4-20250514"
+# Optional but recommended for OpenAlex polite pool usage.
+polite_email: "you@example.com"
+
+sources:
+  - name: "ML Papers from arXiv"
+    connector: "arxiv"
+    queries:
+      - "machine learning"
+      - "natural language processing"
+      - "computer vision"
+    max_results_per_query: 50
+
+  - name: "AI Safety Papers"
+    connector: "openalex"
+    queries:
+      - "AI safety"
+      - "AI alignment"
+    max_results_per_query: 30
+
+  - name: "Tech News"
+    connector: "newsapi"
+    api_key: "YOUR_NEWSAPI_KEY"  # only needed for APIs that require keys
+    queries:
+      - "artificial intelligence"
+    max_results_per_query: 20
